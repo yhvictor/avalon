@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto.avalon;
+
+option java_multiple_files = true;
+option java_package = "com.avalon.proto.base";
+
+message Auth {
+    int32 id = 1;
+    string token = 2;
+}
+
+message ResponseError {
+    string error = 1;
+}

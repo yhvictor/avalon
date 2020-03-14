@@ -1,0 +1,31 @@
+buildscript {
+    repositories {
+        repositories {
+            maven { // The google mirror is less flaky than mavenCentral()
+                url "https://maven-central.storage-download.googleapis.com/repos/central/data/" }
+            mavenCentral()
+            maven {
+                url "https://plugins.gradle.org/m2/"
+            }
+            mavenLocal()
+        }
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
+        classpath "net.ltgt.gradle:gradle-errorprone-plugin:0.6"
+    }
+}
+
+plugins {
+    id "org.jetbrains.gradle.plugin.idea-ext" version "0.7"
+}
+
+allprojects {
+    repositories {
+        maven { // The google mirror is less flaky than mavenCentral()
+            url "https://maven-central.storage-download.googleapis.com/repos/central/data/" }
+        mavenCentral()
+        google()
+        mavenLocal()
+    }
+}

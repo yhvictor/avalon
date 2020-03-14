@@ -1,0 +1,155 @@
+syntax = "proto3";
+
+package proto.avalon;
+
+option java_multiple_files = true;
+option java_package = "com.avalon.proto.game";
+
+import "avalon/avalon_base.proto";
+
+service AvalonGameService {
+    rpc PollGameStatus (PollRequest) returns (stream GameStatusUpdate) {}
+    rpc Propose (ProposeRequest) returns (ResponseError) {}
+    rpc VoteForPlayer (VoteForPlayerRequest) returns (ResponseError) {}
+    rpc voteFoTask (VoteForTaskRequest) returns (ResponseError) {}
+    rpc LadyTest (LadyTestRequest) returns (LadyResponse) {}
+    rpc Assassinate (AssassinateRequest) returns (ResponseError) {}
+}
+
+message PollRequest {
+    Auth auth = 1;
+    int32 gameId = 2;
+}
+
+message ProposeRequest {
+    Auth auth = 1;
+    int32 gameId = 2;
+    Proposal proposal = 3;
+}
+
+message Proposal {
+    int32 from_whom = 1;
+    int32 for_whom = 2;
+    repeated int32 players = 3;
+}
+
+message VoteForPlayerRequest {
+    Auth auth = 1;
+    int32 gameId = 2;
+    Voting voting = 3;
+
+    enum Voting {
+        UNKNOWN = 0;
+        AGREE = 1;
+        DISAGREE = 2;
+    }
+}
+
+message VoteForTaskRequest {
+    Auth auth = 1;
+    int32 gameId = 2;
+    bool success = 3;
+}
+
+message LadyTestRequest {
+    Auth auth = 1;
+    int32 gameId = 2;
+    int32 whom = 3;
+}
+
+message LadyResponse {
+    oneof response {
+        ResponseError response_error = 1;
+        bool is_blue = 2;
+    }
+}
+
+message AssassinateRequest {
+    Auth auth = 1;
+    int32 gameId = 2;
+    int32 whom = 3;
+}
+
+enum Character {
+    UNKNOWN = 0;
+    MERLIN = 1;
+    PERCIVAL = 2;
+    ARTHUR_SERVANT = 3;
+    MORDRED = 4;
+    MORGANA = 5;
+    ASSASSIN = 6;
+    OBERON = 7;
+    LANCELOT_BLUE = 8;
+    LANCELOT_RED = 9;
+}
+
+message Room {
+    string room_name = 1;
+    repeated Character character = 2;
+    int32 maximum_round = 3;
+    bool has_lady_by_the_lake = 4;
+}
+
+message GameStatusUpdate {
+    int32 index = 1;
+
+    reserved 2 to 9;
+
+    oneof update {
+        MissionStart mission_start = 10;
+        RoundStart round_start = 11;
+        Proposal proposal = 12;
+        VotedForPlayer voted_for_player = 13;
+        VotedResult voted_result = 14;
+        VotedForMission voted_for_mission = 15;
+        bool mission_result = 16;
+        LadyTestStarted lady_test_started = 17;
+        LadyTestDone lady_test_done = 18;
+        AssassinateRequested assassinate_requested = 19;
+        ResponseError response_error = 20;
+    }
+
+    message MissionStart {
+        int32 mission = 1;
+        int32 lady_by_the_lake = 2;
+    }
+
+    message RoundStart {
+        int32 round = 1;
+        int32 leader = 2;
+    }
+
+    message VotedForPlayer {
+        int32 from_whom = 1;
+        bool voted = 2;
+    }
+
+    message VotedResult {
+        bool totally_agreed = 1;
+        repeated int32 agreed = 2;
+    }
+
+    message TaskStarted {
+
+    }
+
+    message VotedForMission {
+        int32 from_whom = 1;
+        bool voted = 2;
+    }
+
+    message LadyTestStarted {
+
+    }
+
+    message LadyTestDone {
+        int32 from_whom = 1;
+        int32 to_whom = 2;
+    }
+
+    message AssassinateRequested {
+        int32 from_whom = 1;
+        int32 to_whom = 2;
+        Character character = 3;
+    }
+}

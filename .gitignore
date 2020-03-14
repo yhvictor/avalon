@@ -1,0 +1,5 @@
+# Project exclude paths
+/.gradle/
+/avalon_proto/build/
+/avalon_proto/build/classes/java/main/
+/avalon_server/build/

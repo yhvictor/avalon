@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package proto.avalon;
+
+option java_multiple_files = true;
+option java_package = "com.avalon.proto.service";
+
+import "avalon/avalon_base.proto";
+import "avalon/avalon_game.proto";
+
+service AvalonRoomService {
+    rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {}
+    rpc CreateRoom (CreateRoomRequest) returns (CreateRoomResponse) {}
+    rpc ListRooms (ListRoomRequest) returns (ListRoomResponse) {}
+    rpc JoinRoom (JoinRoomRequest) returns (stream RoomUpdate) {}
+    rpc ChangeSeat (ChangeSeatRequest) returns (ResponseError) {}
+    rpc StartGame (StartGameRequest) returns (ResponseError) {}
+}
+
+message CreateUserRequest {
+    User user = 1;
+}
+
+message CreateUserResponse {
+    oneof response {
+        ResponseError response_error = 1;
+        Auth auth = 2;
+    }
+}
+
+message User {
+    string username = 1;
+    string avatar_url = 2;
+}
+
+message CreateRoomRequest {
+    Auth auth = 1;
+    Room room = 2;
+}
+
+message CreateRoomResponse {
+    oneof response {
+        ResponseError response_error = 1;
+        Room room = 2;
+    }
+}
+
+message ListRoomRequest {
+    Auth auth = 1;
+}
+
+message ListRoomResponse {
+    repeated Room room = 1;
+}
+
+message JoinRoomRequest {
+    Auth auth = 1;
+    string room_name = 2;
+}
+
+message RoomUpdate {
+    oneof updates {
+        UserJoinedUpdate user_joined_update = 1;
+        GameStartUpdate game_start_update = 2;
+        RoomClosedUpdate room_closed_update = 3;
+    }
+
+    message UserJoinedUpdate {
+        User user = 1;
+        int32 position = 2;
+    }
+
+    message GameStartUpdate {
+        int32 game = 1;
+        Character character = 2;
+        repeated int32 known_blue = 3;
+        repeated int32 known_red = 4;
+        repeated int32 known_percival = 5;
+    }
+
+    message RoomClosedUpdate {
+        ResponseError response_error = 1;
+    }
+}
+
+message ChangeSeatRequest {
+    Auth auth = 1;
+    string room_name = 2;
+    int32 seat = 3;
+}
+
+message StartGameRequest {
+    Auth auth = 1;
+}
